@@ -1,5 +1,5 @@
-.PHONY: localdev-start
-localdev-start:
+.PHONY: localdev_bootstrap
+localdev_bootstrap:
 	@echo "Starting local development environment"
 	docker compose -f docker-compose.yml up -d
 
