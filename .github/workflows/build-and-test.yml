@@ -4,17 +4,18 @@ on:
   push:
     branches:
       - '**'
+    paths-ignore:
+      - README.md
+      - 'docs/**'
+      - '*.md'
   pull_request:
     branches:
       - main
       - develop
-  paths_ignore:
-    - README.md
-    - 'docs/**'
-    - '*.md'
-  tags-ignore:
-    - 'staging/**'
-    - 'production/**'
+    paths-ignore:
+      - README.md
+      - 'docs/**'
+      - '*.md'
 
 env:
   ENV: test
@@ -92,4 +93,42 @@ jobs:
       - name: Run tests
         run: make test_ci
 
-     
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.out
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    container: golang:1.23.4
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install dependencies
+        run: make deps
+
+      - name: Build application
+        run: make build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeus-server-${{ github.sha }}
+          path: build/service
+          retention-days: 7
