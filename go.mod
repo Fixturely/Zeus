@@ -32,6 +32,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 )
 
 require (

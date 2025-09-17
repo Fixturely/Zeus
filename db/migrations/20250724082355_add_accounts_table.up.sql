@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS account (
 );
 
 -- Index for better performance
-CREATE INDEX idx_account_email ON account(email);
-CREATE INDEX idx_account_google_id ON account(google_id);
-CREATE INDEX idx_account_tier ON account(tier);
-CREATE INDEX idx_account_status ON account(status);
+CREATE INDEX IF NOT EXISTS idx_account_email ON account(email);
+CREATE INDEX IF NOT EXISTS idx_account_google_id ON account(google_id);
+CREATE INDEX IF NOT EXISTS idx_account_tier ON account(tier);
+CREATE INDEX IF NOT EXISTS idx_account_status ON account(status);
