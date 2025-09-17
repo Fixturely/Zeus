@@ -1,5 +1,5 @@
-Drop index if exists idx_subscriptions_user_id on subscriptions;
-Drop index if exists idx_subscriptions_user_id_team_id on subscriptions;
-Drop index if exists idx_subscriptions_user_id_sport_id on subscriptions;
+drop index if exists idx_subscriptions_user_id;
+drop index if exists idx_subscriptions_user_id_team_id;
+drop index if exists idx_subscriptions_user_id_sport_id;
 
-Drop table if exists subscriptions;
+drop table if exists subscriptions;
