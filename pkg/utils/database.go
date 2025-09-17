@@ -14,8 +14,8 @@ import (
 func NewDatabase() (*bun.DB, error) {
 	databaseCfg := config.GetConfig().Database
 	opts := []pgdriver.Option{
-		pgdriver.WithAddr(fmt.Sprintf("%s:%s", databaseCfg.Host, databaseCfg.Port)),
-		pgdriver.WithDatabase(databaseCfg.DBName),
+		pgdriver.WithAddr(fmt.Sprintf("%s:%d", databaseCfg.Host, databaseCfg.Port)),
+		pgdriver.WithDatabase(databaseCfg.Name),
 		pgdriver.WithUser(databaseCfg.User),
 		pgdriver.WithPassword(databaseCfg.Password),
 	}
