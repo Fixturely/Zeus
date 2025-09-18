@@ -1,6 +1,6 @@
 module subscritracker
 
-go 1.23
+go 1.24.0
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.3
@@ -9,7 +9,7 @@ require (
 	github.com/uptrace/bun v1.2.15
 	github.com/uptrace/bun/dialect/pgdialect v1.2.15
 	github.com/uptrace/bun/driver/pgdriver v1.2.15
-	golang.org/x/oauth2 v0.30.0
+	golang.org/x/oauth2 v0.31.0
 )
 
 require (
