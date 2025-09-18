@@ -86,6 +86,19 @@ jobs:
       - name: Install dependencies
         run: make deps
 
+      - name: Wait for Postgres to be ready
+        env:
+          PGPASSWORD: admin_test
+        run: |
+          apt-get update -y && apt-get install -y postgresql-client
+          echo "Waiting for Postgres on 127.0.0.1:5441..."
+          for i in {1..60}; do
+            pg_isready -h 127.0.0.1 -p 5441 -U admin_test -d zeus-test-db && break
+            echo "Postgres not ready yet... (${i}s)"
+            sleep 1
+          done
+          pg_isready -h 127.0.0.1 -p 5441 -U admin_test -d zeus-test-db
+
       - name: Run migrations
         run: make db-migrate
 
