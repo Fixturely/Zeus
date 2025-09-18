@@ -1,9 +1,9 @@
 module subscritracker
 
-go 1.23
+go 1.23.0
 
 require (
-	github.com/golang-jwt/jwt/v5 v5.2.3
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/stretchr/testify v1.11.1
 	github.com/uptrace/bun v1.2.15
