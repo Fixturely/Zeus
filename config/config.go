@@ -2,13 +2,18 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"strings"
+	"sync"
 )
 
 type Config struct {
-	Database   DatabaseConfig
-	GoogleAuth GoogleAuthConfig
-	Frontend   FrontendConfig
+	Database    DatabaseConfig
+	GoogleAuth  GoogleAuthConfig
+	Frontend    FrontendConfig
+	Environment string
+	AwsEndpoint string
+	ServerPort  string
 }
 
 type FrontendConfig struct {
@@ -23,40 +28,70 @@ type GoogleAuthConfig struct {
 
 type DatabaseConfig struct {
 	Host     string
-	Port     string
+	Port     int
+	Name     string
 	User     string
 	Password string
-	DBName   string
 	SSLMode  bool
 }
 
+var (
+	config *Config
+	once   sync.Once
+)
+
 func GetConfig() *Config {
-	env := strings.ToLower(os.Getenv("NODE_ENV"))
-	// If the environment is not set, default to development
-	if env == "" {
-		env = "development"
-	}
-
-	switch env {
-	case "development":
-		return GetDevelopmentConfig()
-	default:
-
-		cfg := &Config{}
-
-		cfg.Database.Host = os.Getenv("DB_HOST")
-		cfg.Database.Port = os.Getenv("DB_PORT")
-		cfg.Database.User = os.Getenv("DB_USER")
-		cfg.Database.Password = os.Getenv("DB_PASSWORD")
-		cfg.Database.DBName = os.Getenv("DB_NAME")
-		cfg.Database.SSLMode = os.Getenv("DB_SSL_MODE") == "true"
-
-		// Frontend configuration
-		cfg.Frontend.URL = os.Getenv("FRONTEND_URL")
-		if cfg.Frontend.URL == "" {
-			cfg.Frontend.URL = "http://localhost:3000" // Default fallback
+	once.Do(func() {
+		cfg := &Config{
+			Environment: "development",
+			ServerPort:  "8080",
+			Database: DatabaseConfig{
+				Host:     getEnvOrDefault("DATABASE_HOST", "localhost"),
+				User:     getEnvOrDefault("DATABASE_USER", "admin"),
+				Password: getEnvOrDefault("DATABASE_PASSWORD", "admin"),
+				Name:     getEnvOrDefault("DATABASE_NAME", "zeus-local-db"),
+				Port:     getEnvOrDefault("DATABASE_PORT", 5412),
+				SSLMode:  getEnvOrDefault("DATABASE_SSL_MODE", false),
+			},
+			GoogleAuth: GoogleAuthConfig{
+				ClientID:     getEnvOrDefault("GOOGLE_CLIENT_ID", ""),
+				ClientSecret: getEnvOrDefault("GOOGLE_CLIENT_SECRET", ""),
+				RedirectURL:  getEnvOrDefault("GOOGLE_REDIRECT_URL", "http://localhost:8080/auth/google/callback"),
+			},
+			Frontend: FrontendConfig{
+				URL: getEnvOrDefault("FRONTEND_URL", "http://localhost:3000"),
+			},
 		}
 
-		return cfg
+		switch strings.ToLower(os.Getenv("ENV")) {
+		case "test":
+			GetTestConfig(cfg)
+		default:
+			GetDevelopmentConfig(cfg)
+		}
+
+		config = cfg
+	})
+
+	return config
+}
+
+func getEnvOrDefault[T string | int | bool](envVarName string, defaultVal T) T {
+	val := os.Getenv(envVarName)
+	if val == "" {
+		return defaultVal
 	}
+	switch any(defaultVal).(type) {
+	case string:
+		return any(val).(T)
+	case int:
+		i, _ := strconv.Atoi(val)
+		// don't error check cause we WANT it to blow up if it's not a parseable int
+		return any(i).(T)
+	case bool:
+		b, _ := strconv.ParseBool(val)
+		// don't error check cause we WANT it to blow up if it's not a parseable bool
+		return any(b).(T)
+	}
+	return defaultVal
 }
