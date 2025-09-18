@@ -55,6 +55,13 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     container: golang:1.23.4
+    env:
+      # Point app to the Postgres service within the job network
+      DATABASE_HOST: zeus-postgres
+      DATABASE_PORT: "5432"
+      DATABASE_USER: admin_test
+      DATABASE_PASSWORD: admin_test
+      DATABASE_NAME: zeus-test-db
     services:
       zeus-postgres:
         image: postgres:15.4
@@ -91,13 +98,13 @@ jobs:
           PGPASSWORD: admin_test
         run: |
           apt-get update -y && apt-get install -y postgresql-client
-          echo "Waiting for Postgres on 127.0.0.1:5441..."
+          echo "Waiting for Postgres on zeus-postgres:5432..."
           for i in {1..60}; do
-            pg_isready -h 127.0.0.1 -p 5441 -U admin_test -d zeus-test-db && break
+            pg_isready -h zeus-postgres -p 5432 -U admin_test -d zeus-test-db && break
             echo "Postgres not ready yet... (${i}s)"
             sleep 1
           done
-          pg_isready -h 127.0.0.1 -p 5441 -U admin_test -d zeus-test-db
+          pg_isready -h zeus-postgres -p 5432 -U admin_test -d zeus-test-db
 
       - name: Run migrations
         run: make db-migrate
