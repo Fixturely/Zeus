@@ -62,14 +62,13 @@ jobs:
           POSTGRES_DB: zeus-test-db
           POSTGRES_USER: admin_test
           POSTGRES_PASSWORD: admin_test
-          PGPORT: 5441
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U admin_test -d zeus-test-db -p 5432"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 5441:5441
+          - 5441:5432
 
     steps:
       - name: Checkout repository
