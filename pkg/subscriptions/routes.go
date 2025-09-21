@@ -1,8 +1,8 @@
 package subscriptions
 
 import (
-	"subscritracker/pkg/application"
-	"subscritracker/pkg/utils"
+	"zeus/pkg/application"
+	"zeus/pkg/utils"
 )
 
 func RegisterRoutes(app *application.App) {

@@ -3,7 +3,7 @@ package subscriptions
 import (
 	"fmt"
 	"strconv"
-	"subscritracker/pkg/models"
+	"zeus/pkg/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,7 +12,9 @@ func ValidateCreateSubscriptionRequest(c echo.Context) (*models.Subscription, er
 	var req models.Subscription
 
 	// First, try to bind (handles application/json and basic form names matching struct fields/tags)
-	_ = c.Bind(&req)
+	if err := c.Bind(&req); err != nil {
+		return nil, err
+	}
 
 	// For multipart/form-data, explicitly read expected form keys
 	// sport_id is required

@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"log"
-	"subscritracker/pkg/account"
-	"subscritracker/pkg/application"
-	"subscritracker/pkg/auth"
-	"subscritracker/pkg/subscriptions"
+	"zeus/pkg/account"
+	"zeus/pkg/application"
+	"zeus/pkg/auth"
+	"zeus/pkg/subscriptions"
 
 	"github.com/labstack/echo/v4"
 )

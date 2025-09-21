@@ -2,7 +2,7 @@ package subscriptions
 
 import (
 	"net/http"
-	"subscritracker/pkg/application"
+	"zeus/pkg/application"
 
 	"github.com/labstack/echo/v4"
 )

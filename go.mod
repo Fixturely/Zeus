@@ -1,4 +1,4 @@
-module subscritracker
+module zeus
 
 go 1.23.0
 
