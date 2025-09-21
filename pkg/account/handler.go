@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"subscritracker/pkg/application"
-	"subscritracker/pkg/models"
+	"zeus/pkg/application"
+	"zeus/pkg/models"
 
 	"github.com/labstack/echo/v4"
 )

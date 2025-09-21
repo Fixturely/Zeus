@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"subscritracker/pkg/utils"
+	"zeus/pkg/utils"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"

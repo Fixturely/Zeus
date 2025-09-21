@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
-	"subscritracker/config"
+	"zeus/config"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"

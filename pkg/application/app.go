@@ -3,8 +3,8 @@ package application
 import (
 	"context"
 	"log"
-	"subscritracker/config"
-	"subscritracker/pkg/utils"
+	"zeus/config"
+	"zeus/pkg/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"subscritracker/config"
+	"zeus/config"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"

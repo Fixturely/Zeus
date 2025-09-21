@@ -5,9 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"log"
-	"subscritracker/pkg/application"
-	"subscritracker/pkg/models"
 	"time"
+	"zeus/pkg/application"
+	"zeus/pkg/models"
 )
 
 func GetAccountById(app *application.App, id int) (*models.Account, error) {

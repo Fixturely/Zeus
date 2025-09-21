@@ -3,11 +3,11 @@ package auth
 import (
 	"log"
 	"strings"
-	"subscritracker/pkg/account"
-	"subscritracker/pkg/application"
-	"subscritracker/pkg/models"
-	"subscritracker/pkg/utils"
 	"time"
+	"zeus/pkg/account"
+	"zeus/pkg/application"
+	"zeus/pkg/models"
+	"zeus/pkg/utils"
 
 	"github.com/labstack/echo/v4"
 )
