@@ -1,6 +1,7 @@
 package subscriptions
 
 import (
+	"context"
 	"fmt"
 	"zeus/pkg/application"
 	"zeus/pkg/models"
@@ -26,7 +27,7 @@ func InsertSubscription(c echo.Context, app *application.App, subscription *mode
 	if err := app.Database.NewInsert().
 		Model(subscription).
 		Returning("*").
-		Scan(c.Request().Context()); err != nil {
+		Scan(context.Background()); err != nil {
 		return nil, err
 	}
 
