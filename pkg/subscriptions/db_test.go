@@ -2,7 +2,9 @@ package subscriptions
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 	"zeus/pkg/application"
 	"zeus/pkg/models"
 
@@ -15,9 +17,25 @@ func TestInsertSubscription(t *testing.T) {
 	app, err := application.NewApp(ctx)
 	assert.NoError(t, err)
 
+	// Create a test user first to satisfy foreign key constraint
+	googleID := fmt.Sprintf("test-google-id-%d", time.Now().UnixNano())
+	testUser := &models.Account{
+		GoogleID: &googleID,
+		Email:    fmt.Sprintf("test-%d@example.com", time.Now().UnixNano()),
+		Name:     "Test User",
+		Status:   "active",
+		Tier:     "free",
+	}
+
+	err = app.Database.NewInsert().
+		Model(testUser).
+		Returning("*").
+		Scan(ctx)
+	assert.NoError(t, err)
+
 	teamID := 1
 	subscription := &models.Subscription{
-		UserID:  1,
+		UserID:  testUser.ID,
 		SportID: 1,
 		TeamID:  &teamID,
 	}
@@ -52,7 +70,7 @@ func TestInsertSubscription(t *testing.T) {
 		{
 			name: "invalid subscription with zero sport_id",
 			subscription: &models.Subscription{
-				UserID:  1,
+				UserID:  testUser.ID,
 				SportID: 0,
 				TeamID:  nil,
 			},
@@ -61,7 +79,7 @@ func TestInsertSubscription(t *testing.T) {
 		{
 			name: "invalid subscription with zero values",
 			subscription: &models.Subscription{
-				UserID:  0,
+				UserID:  testUser.ID,
 				SportID: 0,
 				TeamID:  nil,
 			},
@@ -76,7 +94,7 @@ func TestInsertSubscription(t *testing.T) {
 
 			// Only set user_id for tests that don't expect missing user_id error
 			if test.name != "invalid subscription with missing user_id in context" {
-				c.Set("user_id", 1) // Set a mock user ID
+				c.Set("user_id", testUser.ID) // Set the test user ID
 			}
 
 			result, err := InsertSubscription(c, app, test.subscription)
@@ -86,8 +104,8 @@ func TestInsertSubscription(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, result)
-				// UserID is set from context, so we expect it to be 1 (from context)
-				expectedUserID := 1
+				// UserID is set from context, so we expect it to be testUser.ID (from context)
+				expectedUserID := testUser.ID
 				if test.name == "invalid subscription with missing user_id in context" {
 					expectedUserID = 0 // This test case won't reach here since it expects an error
 				}
