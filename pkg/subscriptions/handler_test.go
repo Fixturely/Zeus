@@ -19,6 +19,27 @@ func TestCreateSubscriptionHandler(t *testing.T) {
 	app, err := application.NewApp(ctx)
 	assert.NoError(t, err)
 
+	// Create a mock HTTP server for MIKE API calls
+	mikeServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		// Mock responses based on the request path
+		if r.URL.Path == "/sport/exists/1" || r.URL.Path == "/sport/exists/2" {
+			_, _ = w.Write([]byte(`{"exists": true}`))
+		} else if r.URL.Path == "/team/exists/1" {
+			_, _ = w.Write([]byte(`{"exists": true}`))
+		} else {
+			_, _ = w.Write([]byte(`{"exists": false}`))
+		}
+	}))
+	defer mikeServer.Close()
+
+	// Override the MIKE API URL in config for testing
+	// Note: This is a simplified approach. In production, you'd want to use dependency injection
+	originalConfig := app.Config
+	app.Config.MikeAPIKey = mikeServer.URL
+
 	tests := []struct {
 		name           string
 		requestBody    map[string]interface{}
@@ -117,4 +138,7 @@ func TestCreateSubscriptionHandler(t *testing.T) {
 			}
 		})
 	}
+
+	// Restore original config
+	app.Config = originalConfig
 }

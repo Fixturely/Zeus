@@ -14,6 +14,7 @@ type Config struct {
 	Environment string
 	AwsEndpoint string
 	ServerPort  string
+	MikeAPIKey  string
 }
 
 type FrontendConfig struct {
@@ -61,6 +62,7 @@ func GetConfig() *Config {
 			Frontend: FrontendConfig{
 				URL: getEnvOrDefault("FRONTEND_URL", "http://localhost:3000"),
 			},
+			MikeAPIKey: getEnvOrDefault("MIKE_API_KEY", "http://localhost:9000/v1"),
 		}
 
 		switch strings.ToLower(os.Getenv("ENV")) {
