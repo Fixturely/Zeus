@@ -11,7 +11,7 @@ import (
 func CheckTeamExists(teamId int) (bool, error) {
 
 	cfg := config.GetConfig()
-	// Make a GET request to MIKE API to check if the team exisits
+	// Make a GET request to MIKE API to check if the team exists
 	url := fmt.Sprintf("%s/team/exists/%d", cfg.MikeAPIKey, teamId)
 
 	// Make a GET request to the Mike API to check if the team exists

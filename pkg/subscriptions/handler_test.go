@@ -26,11 +26,11 @@ func TestCreateSubscriptionHandler(t *testing.T) {
 
 		// Mock responses based on the request path
 		if r.URL.Path == "/sport/exists/1" || r.URL.Path == "/sport/exists/2" {
-			w.Write([]byte(`{"exists": true}`))
+			_, _ = w.Write([]byte(`{"exists": true}`))
 		} else if r.URL.Path == "/team/exists/1" {
-			w.Write([]byte(`{"exists": true}`))
+			_, _ = w.Write([]byte(`{"exists": true}`))
 		} else {
-			w.Write([]byte(`{"exists": false}`))
+			_, _ = w.Write([]byte(`{"exists": false}`))
 		}
 	}))
 	defer mikeServer.Close()

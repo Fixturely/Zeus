@@ -40,7 +40,7 @@ func TestCheckTeamExists(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 
 				// Write the mock response
-				w.Write([]byte(test.mockResponse))
+				_, _ = w.Write([]byte(test.mockResponse))
 			}))
 			defer server.Close()
 
