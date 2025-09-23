@@ -74,7 +74,8 @@ jobs:
           export GOOS=linux
           export GOARCH=amd64
           export CGO_ENABLED=1
-          make build
+          echo "---> Building: (linux, amd64)"
+          go build -race -o build/service cmd/server/main.go && echo "Successful!"
 
       - name: Create staging release artifact
         run: |
@@ -82,14 +83,14 @@ jobs:
           cp build/service deploy/staging/zeus
           cp zeus-staging.nomad.hcl deploy/staging/zeus.nomad.hcl
           cd deploy/staging
-          tar -czf zeus-staging-release.tar.gz .
+          tar -czf ../zeus-staging-release.tar.gz zeus zeus.nomad.hcl
           echo "Staging release artifact created"
 
       - name: Upload staging release artifact
         uses: actions/upload-artifact@v4
         with:
           name: zeus-staging-release
-          path: deploy/staging/zeus-staging-release.tar.gz
+          path: zeus-staging-release.tar.gz
           retention-days: 30
 
   # Note: Auto-deployment removed for now. 
