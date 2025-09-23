@@ -31,10 +31,10 @@ jobs:
           sudo apt-get install -y make postgresql postgresql-contrib
           sudo systemctl start postgresql
           sudo -u postgres createdb test_db || true
-          sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test';" || true
+          sudo -u postgres psql -c "DROP USER IF EXISTS test;" || true
+          sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test' CREATEDB CREATEROLE SUPERUSER;" || true
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test;" || true
-          sudo -u postgres psql -c "GRANT ALL ON SCHEMA public TO test;" || true
-          sudo -u postgres psql -c "GRANT CREATE ON SCHEMA public TO test;" || true
+          sudo -u postgres psql -c "ALTER DATABASE test_db OWNER TO test;" || true
 
       - name: Install golangci-lint
         run: |
