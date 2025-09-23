@@ -39,6 +39,12 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
+      - name: Download Go modules
+        run: |
+          export GOPROXY=https://proxy.golang.org,direct
+          export GOSUMDB=sum.golang.org
+          go mod download
+
       - name: Run database migrations
         run: |
           export DATABASE_HOST=localhost
@@ -46,7 +52,9 @@ jobs:
           export DATABASE_USER=test
           export DATABASE_PASSWORD=test
           export DATABASE_NAME=test_db
-          make db-migrate || echo "Migrations may already be applied, continuing..."
+          echo "Running database migrations..."
+          make db-migrate
+          echo "Migrations completed successfully"
 
       - name: Run tests
         run: |
