@@ -90,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zeus-staging-release
-          path: zeus-staging-release.tar.gz
+          path: deploy/zeus-staging-release.tar.gz
           retention-days: 30
 
   # Note: Auto-deployment removed for now. 
