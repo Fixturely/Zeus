@@ -21,10 +21,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Clean up disk space first
+          # Aggressive disk cleanup
           sudo apt-get clean
           sudo rm -rf /var/cache/apt/archives/*
           sudo rm -rf /tmp/*
+          sudo rm -rf /home/ubuntu/go
+          sudo rm -rf /var/log/*.log /var/log/*.gz
           
           sudo apt-get update
           sudo apt-get install -y make postgresql postgresql-contrib curl
@@ -38,6 +40,11 @@ jobs:
           echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
           export PATH=$PATH:/usr/local/go/bin
           
+          # Set Go to use minimal cache and build in tmp
+          export GOCACHE=/tmp/go-cache
+          export GOMODCACHE=/tmp/go-mod-cache
+          mkdir -p /tmp/go-cache /tmp/go-mod-cache
+          
           # Install golangci-lint
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /tmp v1.55.2
           sudo mv /tmp/golangci-lint /usr/local/bin/
@@ -45,6 +52,8 @@ jobs:
       - name: Run database migrations
         run: |
           export PATH=$PATH:/usr/local/go/bin
+          export GOCACHE=/tmp/go-cache
+          export GOMODCACHE=/tmp/go-mod-cache
           export DATABASE_HOST=localhost
           export DATABASE_PORT=5432
           export DATABASE_USER=test
@@ -55,6 +64,8 @@ jobs:
       - name: Run tests
         run: |
           export PATH=$PATH:/usr/local/go/bin
+          export GOCACHE=/tmp/go-cache
+          export GOMODCACHE=/tmp/go-mod-cache
           export GOPROXY=https://proxy.golang.org,direct
           export GOSUMDB=sum.golang.org
           export DATABASE_HOST=localhost
@@ -63,15 +74,22 @@ jobs:
           export DATABASE_PASSWORD=test
           export DATABASE_NAME=test_db
           timeout 300 make test
+          
+          # Clean up after tests to save space
+          sudo rm -rf /tmp/go-mod-cache/*
 
       - name: Run linting
         run: |
           export PATH=$PATH:/usr/local/go/bin
+          export GOCACHE=/tmp/go-cache
+          export GOMODCACHE=/tmp/go-mod-cache
           make lint
 
       - name: Build application
         run: |
           export PATH=$PATH:/usr/local/go/bin
+          export GOCACHE=/tmp/go-cache
+          export GOMODCACHE=/tmp/go-mod-cache
           make build
 
       - name: Create staging release artifact
