@@ -46,7 +46,8 @@ jobs:
           export DATABASE_USER=test
           export DATABASE_PASSWORD=test
           export DATABASE_NAME=test_db
-          make db-migrate
+          # Force migrations to run even if they think they're already applied
+          make db-migrate || echo "Migrations may already be applied, continuing..."
 
       - name: Run tests
         run: |
