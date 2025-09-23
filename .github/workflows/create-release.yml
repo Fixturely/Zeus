@@ -28,9 +28,13 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
+          cache: true
 
       - name: Run tests
-        run: make test
+        run: |
+          export GOPROXY=https://proxy.golang.org,direct
+          export GOSUMDB=sum.golang.org
+          timeout 300 make test
 
       - name: Run linting
         run: make lint
