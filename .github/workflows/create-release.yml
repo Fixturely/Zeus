@@ -70,12 +70,16 @@ jobs:
           timeout 300 make test
 
       - name: Build application
-        run: make build
+        run: |
+          export GOOS=linux
+          export GOARCH=amd64
+          export CGO_ENABLED=1
+          make build
 
       - name: Create staging release artifact
         run: |
           mkdir -p deploy/staging
-          cp build/zeus deploy/staging/
+          cp build/service deploy/staging/zeus
           cp zeus-staging.nomad.hcl deploy/staging/zeus.nomad.hcl
           cd deploy/staging
           tar -czf zeus-staging-release.tar.gz .
