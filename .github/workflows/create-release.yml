@@ -1,0 +1,92 @@
+name: Create Release
+
+# Create Release Artifacts on every push to `main`
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  create-nomad-release:
+    name: Create Nomad Release
+    runs-on: [self-hosted, lob-runner, x64, Linux]
+    permissions:
+      contents: read
+      packages: write
+      deployments: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make docker.io
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Run tests
+        run: make test
+
+      - name: Run linting
+        run: make lint
+
+      - name: Build application
+        run: make build
+
+      - name: Create staging release artifact
+        run: |
+          mkdir -p deploy/staging
+          cp build/zeus deploy/staging/
+          cp zeus-staging.nomad.hcl deploy/staging/zeus.nomad.hcl
+          cd deploy/staging
+          tar -czf zeus-staging-release.tar.gz .
+          echo "Staging release artifact created"
+
+      - name: Upload staging release artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zeus-staging-release
+          path: deploy/staging/zeus-staging-release.tar.gz
+          retention-days: 30
+
+  auto-promote:
+    name: Auto Promote to Staging
+    needs: create-nomad-release
+    runs-on: [self-hosted, lob-runner, Linux]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nomad CLI
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install nomad
+
+      - name: Download staging release artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: zeus-staging-release
+          path: ./staging-release
+
+      - name: Auto Promote to staging
+        run: |
+          cd staging-release
+          tar -xzf zeus-staging-release.tar.gz
+          
+          # Deploy to staging
+          nomad job run zeus.nomad.hcl
+          
+          # Verify deployment
+          nomad job status zeus-staging
+        env:
+          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+
+      
