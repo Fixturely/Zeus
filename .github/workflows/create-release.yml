@@ -27,6 +27,10 @@ jobs:
           sudo -u postgres createdb test_db || true
           sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test';" || true
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test;" || true
+          
+          # Install golangci-lint
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+          sudo mv $(go env GOPATH)/bin/golangci-lint /usr/local/bin/
 
       - name: Set up Go
         uses: actions/setup-go@v4
