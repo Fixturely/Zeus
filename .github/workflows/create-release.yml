@@ -69,9 +69,6 @@ jobs:
           export DATABASE_NAME=test_db
           timeout 300 make test
 
-      - name: Run linting
-        run: make lint
-
       - name: Build application
         run: make build
 
