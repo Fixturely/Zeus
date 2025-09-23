@@ -9,7 +9,7 @@ on:
 jobs:
   create-nomad-release:
     name: Create Nomad Release
-    runs-on: [self-hosted, lob-runner, x64, Linux]
+    runs-on: [self-hosted, lob-runner, arm64, Linux]
     permissions:
       contents: read
       packages: write
@@ -57,7 +57,7 @@ jobs:
   auto-promote:
     name: Auto Promote to Staging
     needs: create-nomad-release
-    runs-on: [self-hosted, lob-runner, Linux]
+    runs-on: [self-hosted, lob-runner, arm64, Linux]
 
     steps:
       - name: Checkout repository
