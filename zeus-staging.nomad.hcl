@@ -44,7 +44,7 @@ job "zeus-staging" {
       }
 
       artifact {
-        source = "file:///tmp/zeus-staging-release.tar.gz"
+        source = "file://deploy/staging/zeus-staging-release.tar.gz"
         destination = "/local"
         mode = "file"
       }
