@@ -21,26 +21,30 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Clean up disk space first
+          sudo apt-get clean
+          sudo rm -rf /var/cache/apt/archives/*
+          sudo rm -rf /tmp/*
+          
           sudo apt-get update
-          sudo apt-get install -y make postgresql postgresql-contrib
+          sudo apt-get install -y make postgresql postgresql-contrib curl
           sudo systemctl start postgresql
           sudo -u postgres createdb test_db || true
           sudo -u postgres psql -c "CREATE USER test WITH PASSWORD 'test';" || true
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test;" || true
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
-          cache: true
-
-      - name: Install golangci-lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
-          sudo mv $(go env GOPATH)/bin/golangci-lint /usr/local/bin/
+          
+          # Install Go manually (actions/setup-go doesn't work well on self-hosted runners)
+          curl -fsSL https://go.dev/dl/go1.21.5.linux-arm64.tar.gz | sudo tar -xzC /usr/local
+          echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+          export PATH=$PATH:/usr/local/go/bin
+          
+          # Install golangci-lint
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /tmp v1.55.2
+          sudo mv /tmp/golangci-lint /usr/local/bin/
 
       - name: Run database migrations
         run: |
+          export PATH=$PATH:/usr/local/go/bin
           export DATABASE_HOST=localhost
           export DATABASE_PORT=5432
           export DATABASE_USER=test
@@ -50,6 +54,7 @@ jobs:
 
       - name: Run tests
         run: |
+          export PATH=$PATH:/usr/local/go/bin
           export GOPROXY=https://proxy.golang.org,direct
           export GOSUMDB=sum.golang.org
           export DATABASE_HOST=localhost
@@ -60,10 +65,14 @@ jobs:
           timeout 300 make test
 
       - name: Run linting
-        run: make lint
+        run: |
+          export PATH=$PATH:/usr/local/go/bin
+          make lint
 
       - name: Build application
-        run: make build
+        run: |
+          export PATH=$PATH:/usr/local/go/bin
+          make build
 
       - name: Create staging release artifact
         run: |
