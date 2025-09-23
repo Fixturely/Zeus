@@ -48,7 +48,7 @@ jobs:
           echo "Staging release artifact created"
 
       - name: Upload staging release artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zeus-staging-release
           path: deploy/staging/zeus-staging-release.tar.gz
@@ -70,7 +70,7 @@ jobs:
           sudo apt-get update && sudo apt-get install nomad
 
       - name: Download staging release artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: zeus-staging-release
           path: ./staging-release
