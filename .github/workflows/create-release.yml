@@ -46,7 +46,6 @@ jobs:
           export DATABASE_USER=test
           export DATABASE_PASSWORD=test
           export DATABASE_NAME=test_db
-          # Force migrations to run even if they think they're already applied
           make db-migrate || echo "Migrations may already be applied, continuing..."
 
       - name: Run tests
@@ -116,5 +115,3 @@ jobs:
         env:
           NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
           NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
-
-      
